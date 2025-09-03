@@ -43,7 +43,7 @@
       transition: 0.3s;
     }
     input:focus {
-      border-color: #8aa894;
+      border-color: #66a6ff;
       box-shadow: 0 0 8px rgba(26, 91, 52, 0.5);
     }
     button {
@@ -68,9 +68,9 @@
 </head>
 <body>
   <div class="container">
-
     <!-- Logo -->
     <img src="images/logo.png" alt="Logo" style="width:80px; margin-bottom:15px;">
+
     <h2>🌍 Carbon Footprint Calculator</h2>
     <form id="lifeForm">
       <label for="electricity1">📱 Phone Charging (hours/day):</label>
@@ -90,22 +90,17 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     function calculateFootprint() {
-      //assume, smartPhone consume 5 Watt
-      //assume, Computer Consumes 120 Watt
+      // Electricity consumption
       var electricity1 = parseFloat(document.getElementById("electricity1").value);
       var electricity2 = parseFloat(document.getElementById("electricity2").value);
 
       var electricityTotal = (electricity1 * 5) + (electricity2 * 120);
+      var electricityFinal = (electricityTotal / 1000) * 0.85; // 0.85 EF
 
-      //assume, emission factor of electricity is 0.85
-      var electricityFinal = (electricityTotal / 1000) * 0.85;
-
-      //assume,petrol price 106.03/-
+      // Transportation
       var transportation = parseFloat(document.getElementById("transportation").value);
-      var transportationTotal = transportation / 106.03;
-
-      //assume, emission factor of Petrol is 2.296
-      var transportationFinal = transportationTotal * 2.296;
+      var transportationTotal = transportation / 106.03; // fuel price
+      var transportationFinal = transportationTotal * 2.296; // EF petrol
 
       var total = electricityFinal + transportationFinal;
       var totalThirty = total * 30;
@@ -113,10 +108,14 @@
       // tree plantation factor
       var totalTreePlantation = (55.5 / 1500 ) * totalThirty;
 
+      // Recycling offset: assume 1 kg recycle saves ~2.5 kgCO2e
+      var recycleNeeded = (total / 2.5);
+
       return {
         perDay: total.toFixed(2),
         perMonth: totalThirty.toFixed(2),
-        trees: totalTreePlantation.toFixed(2)
+        trees: totalTreePlantation.toFixed(2),
+        recycle: recycleNeeded.toFixed(2)
       };
     }
 
@@ -129,16 +128,19 @@
         title: "✅ Your Carbon Footprint",
         html: `
           <div style="text-align:left;">
-            <p>🌱 Per Day: <b>${result.perDay} kgCO2e</b></p>
-            <p>📅 Per Month: <b>${result.perMonth} kgCO2e</b></p>
+            <p>🌱 Per Day: <b>${result.perDay} kgCO₂e</b></p>
+            <p>📅 Per Month: <b>${result.perMonth} kgCO₂e</b></p>
             <p>🌳 Trees Needed (per month): <b>${result.trees}</b></p>
+            <hr>
+            <p>♻️ To offset <b>${result.perDay} kgCO₂e/day</b>, 
+               you need to recycle about <b>${result.recycle} kg/day</b>.</p>
           </div>
         `,
         icon: "success",
         confirmButtonText: "OK",
-        confirmButtonColor: "#2575fc",
+        confirmButtonColor: "#2FB850",
         background: "#f9f9ff",
-        width: 420
+        width: 430
       });
     });
   </script>
